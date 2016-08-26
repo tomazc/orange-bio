@@ -2,6 +2,8 @@
 Module for browsing any analyzing sets annotated with MeSH ontology.
 """
 
+from __future__ import print_function
+
 import Orange
 from xml.sax import make_parser
 from xml.dom import minidom
@@ -122,7 +124,7 @@ class obiMeSH(object):
         """
         ret = dict()
         if(not self.dataLoaded):
-            print "Annotation and ontology has never been loaded!"
+            print('Annotation and ontology has never been loaded!')
             return ret
 
         if idType == "cid":
@@ -218,7 +220,7 @@ class obiMeSH(object):
                 if(self.toID.has_key(k)):  # this should be always true, but anyway ...
                     endIDs.extend(self.toID[k])
                 else:
-                    print "Current ontology does not contain MeSH term ", k, "."
+                    print('Current ontology does not contain MeSH term ', k, '.')
             # we find id of all parents
             #allIDs = self.__findParents(endIDs)
             allIDs = endIDs
@@ -310,22 +312,22 @@ class obiMeSH(object):
     def __pp(self, offset, item, relations, data, selection, funct=None):
         mapping = {"term": 0, "desc": 1, "r": 2, "c": 3, "p": 4, "fold": 5, "func": 6}
         for i in range(0, offset):
-            print " ",
+            print(' ', end='')
         if type(data[item]) == list:
             pval = "%.4g" % data[item][2]
             fold = "%.4g" % data[item][3]
             print_data = [self.toName[item], self.toDesc[self.toName[item]], str(data[item][0]), str(data[item][1]), str(pval), str(fold)]
             for i in selection:
                 if i != "term":
-                    print i + "=" + print_data[mapping[i]],
+                    print(i + '=' + print_data[mapping[i]], end='')
                 else:
-                    print print_data[mapping[i]],
+                    print(print_data[mapping[i]], end='')
             if funct != None:
-                print " ", funct(print_data[0]),
+                print(' ', funct(print_data[0]), end='')
             # print self.toName[item], " r=" + str(data[item][1])  +" c="+ str(data[item][2])  ," p=" + str(pval) + " fold=" + str(fold)
-            print ""
+            print()
         else:
-            print self.toName[item], " freq=" + str(data[item])
+            print(self.toName[item], ' freq=' + str(data[item]))
         for i in relations[item]:
             self.__pp(offset + 2, i, relations, data, selection, funct=funct)
 
@@ -337,40 +339,40 @@ class obiMeSH(object):
         # first we calculate additional info for printing MeSH ontology
         info = self.__treeData(data.keys())
         w = {"term": "'95px'", "r": "'70px'", "c": "'70px'", "p": "'95px'"}
-        print "<table>\n<tr>"
+        print('<table>\n<tr>')
         for i in selection:
-            print "<th width=" + w[i] + " align='left'>" + i + "</th>"
+            print('<th width=' + w[i] + " align='left'>" + i + '</th>')
         if func != None:
             func("header", "")
-        print "</tr>\n"
+        print('</tr>\n')
         for i in info["tops"]:
             self.__htmlpp(0, i, info, data, selection, funct=func)
-        print "</table>"
+        print('</table>')
 
     def __htmlpp(self, offset, item, relations, data, selection, funct=None):
         mapping = {"term": 0, "desc": 1, "r": 2, "c": 3, "p": 4, "fold": 5, "func": 6}
-        print "<tr>"
+        print('<tr>')
         if type(data[item]) == list:
             pval = "%.4g" % data[item][2]
             fold = "%.4g" % data[item][3]
             print_data = [self.toName[item], self.toDesc[self.toName[item]], str(data[item][0]), str(data[item][1]), str(pval), str(fold)]
             for i in selection:
-                print "<td>"
+                print('<td>')
                 if i == "term":
                     for l in range(0, offset):
-                        print "&nbsp;",
+                        print('&nbsp;', end='')
                 elif i == "p":
-                    print '%(#)2.3e' % {'#': float(print_data[mapping[i]])} + "</td>",
+                    print('%(#)2.3e' % {'#': float(print_data[mapping[i]])} + '</td>', end='')
                     continue
-                print print_data[mapping[i]] + " &nbsp;</td>",
+                print(print_data[mapping[i]] + ' &nbsp;</td>', end='')
 
             if funct != None:
-                print funct(print_data[0], item),
+                print(funct(print_data[0], item), end='')
 
             # print self.toName[item], " r=" + str(data[item][1])  +" c="+ str(data[item][2])  ," p=" + str(pval) + " fold=" + str(fold)
-            print "</tr>"
+            print('</tr>')
         else:
-            print self.toName[item], " freq=" + str(data[item])
+            print(self.toName[item], ' freq=' + str(data[item]))
 
         for i in relations[item]:
             self.__htmlpp(offset + 2, i, relations, data, selection, funct=funct)
@@ -388,7 +390,7 @@ class obiMeSH(object):
             atts.append(orange.StringVariable(i))
         domain = orange.Domain(atts, 0)
         data = orange.ExampleTable(domain)
-        print data.domain.attributes
+        print(data.domain.attributes)
         mapping = {"pmid": 0, "title": 1, "abstract": 2, "mesh": 3, "affilation": 4}
         for i in handler.articles:
             r = []
@@ -441,7 +443,7 @@ class obiMeSH(object):
                         continue
                     except NameError:
                         continue
-        print "Program was unable to determinate MeSH attribute."
+        print('Program was unable to determinate MeSH attribute.')
         return "Unknown"
 
     def __isPrecedesor(self, a, b):
@@ -475,7 +477,7 @@ class obiMeSH(object):
             try:
                 endNodes = list(set(eval(i[self.ref_att].value)))  # for every CID we look up for end nodes in mesh. for every end node we have to find its ID
             except SyntaxError:					 # where was a parse error
-                print "Error in parsing ", i[self.ref_att].value
+                print('Error in parsing ', i[self.ref_att].value)
                 if fuzzy:
                     n = n - float(i["u"])
                 else:
@@ -487,7 +489,7 @@ class obiMeSH(object):
                 if(self.toID.has_key(k)):					# this should be always true, but anyway ...
                     endIDs.extend(self.toID[k])
                 else:
-                    print "Current ontology does not contain MeSH term ", k, "."
+                    print('Current ontology does not contain MeSH term ', k, '.')
             # endIDs may be empty > in this case we can skip this example
             if len(endIDs) == 0:
                 if fuzzy:
@@ -567,7 +569,7 @@ class obiMeSH(object):
             t += 1
             parts = i.split("\t")  # delimiters are tabs
             if(len(parts) != 3):
-                print "error reading ontology ", parts[0]
+                print('error reading ontology ', parts[0])
             parts[2] = parts[2].rstrip("\n\r")
             ids = parts[1].split(";")
             self.toID[parts[0]] = ids  # append additional ID
@@ -578,7 +580,7 @@ class obiMeSH(object):
         for i in f:
             parts = i.split(";")		# delimiters are tabs
             if(len(parts) != 2):
-                print "error reading ontology ", parts[0]
+                print('error reading ontology ', parts[0])
             parts[1] = parts[1].rstrip("\n\r")
             cid = int(parts[0])
             if self.fromCID.has_key(cid):

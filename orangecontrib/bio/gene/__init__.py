@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 import sys
 import os
 import time
@@ -122,7 +122,7 @@ class NCBIGeneInfo(dict):
                 self._history = dict([(line.split("\t")[2], GeneHistory(line)) for line in open(fname, "rb").read().splitlines()])
                 
             except Exception as ex:
-                print >> sys.srderr, "Loading NCBI gene history failed.", ex
+                print('Loading NCBI gene history failed.', ex, file=sys.stderr)
                 self._history = {}
         return self._history
         

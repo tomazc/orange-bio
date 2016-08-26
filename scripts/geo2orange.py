@@ -1,10 +1,12 @@
+from __future__ import print_function
+
 import string
 import re
 import sys
 import os.path
 
 def usage():
-   print "%s geo-file-name orange-file-name" % os.path.basename(sys.argv[0])
+   print('%s geo-file-name orange-file-name') % os.path.basename(sys.argv[0]))
 
 if len(sys.argv)<>3:
    usage()
@@ -19,7 +21,7 @@ outname = sys.argv[2]
 attvalue = re.compile("(.*) = (.*)")
 
 def geo_process_file(inname, choice=None):
-   print "Processing: %s" % inname
+   print('Processing: %s' % inname)
    f = open(inname)
    subsets = {}
    data = {}
@@ -83,7 +85,7 @@ for i, g in enumerate(geneids):
    genepos[g] = genepos.get(g, []) + [i]
 
 fout = open(outname, "w")
-print "Saving to:  %s" % outname
+print('Saving to:  %s' % outname)
 fout.write("id\toutcome\t" + "\t".join(geneids) + "\n")
 fout.write("string\td" + "\tc"*len(geneids) + "\n")
 fout.write("meta\tclass" + "\t"*len(geneids) + "\n")

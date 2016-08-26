@@ -13,6 +13,8 @@ try:
 except ImportError:
     pass
 
+from __future__ import print_function
+
 ##from pybel import *
 from copy import deepcopy
 import Orange
@@ -111,7 +113,7 @@ class Molecule(object):
         mol.__in_place_deepcopy__(self, memo)
         return mol
     def __in_place_deepcopy__(self, mol, memo):
-        if debug: print "Copying molecule"
+        if debug: print('Copying molecule')
         self.atoms=deepcopy(mol.atoms, memo)
         #memo[mol.atoms]=self.atoms
         self.bonds=deepcopy(mol.bonds, memo)
@@ -119,7 +121,7 @@ class Molecule(object):
         self.rings=deepcopy(mol.rings, memo)
         self.nextExtendedIndex=mol.nextExtendedIndex
         #memo[mol.rings]=self.rings"""
-        
+
     def AddAtom(self, atom):
         if atom in self.atoms:
             raise Exception("Atom already present")
@@ -146,7 +148,7 @@ class Molecule(object):
         return None
     def GetAtom(self, index):
         return self.atoms[index]
-    
+
 def cmpAtoms(atom1, atom2):
     return atom1.GetAtomicNum()==atom2.GetAtomicNum() and atom1.IsAromatic()==atom2.IsAromatic()
 def cmpAtomBonds(bond1, bond2):
@@ -209,7 +211,7 @@ class FragmentExtensionByAtom(FragmentExtension):
         for embeding, atomInd in zip(embedings, self.atomIndices):
             embeding[atom.atomIndex]=atomInd
         fragment.embedings=embedings
-        
+
 class FragmentExtensionByBondAtom(FragmentExtension):
     def __init__(self, startAtomInd, bondOrder, endAtoms, embedings):
         FragmentExtension.__init__(self, startAtomInd, embedings)
@@ -221,11 +223,11 @@ class FragmentExtensionByBondAtom(FragmentExtension):
         self.endAtoms.extend(extension.endAtoms)
         self.embedings.extend(extension.embedings)
     def Extend(self, fragment):
-        if debug: print "Extending by bond and atom"
+        if debug: print('Extending by bond and atom')
         sAtom=fragment.atoms[self.startAtomInd]
         atom=Atom(fragment, self.endAtoms[0].GetAtomicNum(),self.endAtoms[0].IsAromatic())
         #atom.SetAtomicNum(self.endAtoms[0].GetAtomicNum())
-        
+
         Bond(fragment, sAtom, atom, self.bondOrder)
         sAtom.lastExtendedBondOrder=self.bondOrder
         sAtom.lastExtendedAtomicNum=atom.GetAtomicNum()
@@ -234,7 +236,7 @@ class FragmentExtensionByBondAtom(FragmentExtension):
         for embeding, endAtom in zip(embedings, self.endAtoms):
             embeding[atom.atomIndex]=endAtom.GetIdx()
         fragment.embedings=embedings
-        
+
 class FragmentExtensionByBond(FragmentExtension):
     def __init__(self, startAtomInd, bondOrder, endAtomInd, embedings):
         FragmentExtension.__init__(self, startAtomInd, embedings)
@@ -245,7 +247,7 @@ class FragmentExtensionByBond(FragmentExtension):
     def MergeFrom(self, extension):
         self.embedings.extend(extension.embedings)
     def Extend(self, fragment):
-        if debug: print "Extending by bond"
+        if debug: print('Extending by bond')
         sAtom=fragment.atoms[self.startAtomInd]
         eAtom=fragment.atoms[self.endAtomInd]
         Bond(fragment, sAtom, eAtom, self.bondOrder)
@@ -291,7 +293,7 @@ class FragmentExtensionByBondRing(FragmentExtension):
         self.embedings.extend(extension.embedings)
         self.rings.extend(extension.rings)
     def Extend(self, fragment):
-        if debug: print "Extending by ring and bond"
+        if debug: print('Extending by ring and bond')
         sAtom=fragment.atoms[self.startAtomInd]
         endAtom1=self.endAtoms[0]
         ring1=self.rings[0]    #One ring to rule them all
@@ -314,7 +316,7 @@ class FragmentExtensionByBondRing(FragmentExtension):
                     embeding[atom.atomIndex]=map[embeding1[atom.atomIndex]]
                 embeding[newRing]=ring
                 fragment.embedings.append(embeding)
-        
+
 class FragmentExtensionByRing(FragmentExtension):
     def __init__(self, rings, embedings):
         FragmentExtension.__init__(self, 0, embedings)
@@ -346,7 +348,7 @@ class FragmentExtensionByRing(FragmentExtension):
         self.rings.extend(extension.rings)
         self.embedings.extend(extension.embedings)
     def Extend(self, fragment):
-        if debug: print "Extending by ring"
+        if debug: print('Extending by ring')
         ring1=self.rings[0]
         tmpEmbeding=Embeding(self.embedings[0],fragment=fragment)
         newRing=Ring(fragment, ring1, tmpEmbeding) #Changes embeding
@@ -361,7 +363,7 @@ class FragmentExtensionByRing(FragmentExtension):
                     embeding[atom.atomIndex]=map[tmpEmbeding[atom.atomIndex]]
                 embeding[newRing]=ring
                 fragment.embedings.append(embeding)
-        
+
 class Fragment(Molecule):
     """A class representing a molecular fragment
     Methods:
@@ -393,7 +395,7 @@ class Fragment(Molecule):
         f.excludeAtomList=self.excludeAtomList
         f.lastExtendedAtomIndex=self.lastExtendedAtomIndex
         return f
-        
+
     def InitializeFragment(self, atomicNum):
         mol=OBMol()
         atom=Atom(self, atomicNum)
@@ -401,10 +403,10 @@ class Fragment(Molecule):
             for a in OBMolAtomIter(mol):
                 if atom.Match(a):
                     self.embedings.append(Embeding({atom.atomIndex : a.GetIdx()}, molecule=mol, fragment=self))
-                    
+
     def IsAtomExcluded(self, atom):
         return atom.GetAtomicNum() in self.excludeAtomList
-    
+
     def GetCandidateAtoms(self):
         return filter(lambda a:a.extendedIndex>=self.lastExtendedAtomIndex, self.atoms)
 
@@ -418,7 +420,7 @@ class Fragment(Molecule):
                     break
             else:
                 yield ring1
-        
+
     def GetCandidatesFromAtom(self, atomInd, embeding):
         candidates=[]
         reverseEmbedingDict=embeding.GetReverseDict()
@@ -432,7 +434,7 @@ class Fragment(Molecule):
             if bond.GetBondOrder()>self.atoms[atomInd].lastExtendedBondOrder or (bond.GetBondOrder()==self.atoms[atomInd].lastExtendedBondOrder and nbrAtom.GetAtomicNum()>=self.atoms[atomInd].lastExtendedAtomicNum):
                 if self.miner.addWholeRings: #Whole rings are added at the same time (no new bond can connect to an atom already in the embeding)
                     if nbrAtom.IsInRing():
-                        if not bond.IsInRing(): #ring to ring extensions are handled in GetRingCandidatesFromRing 
+                        if not bond.IsInRing(): #ring to ring extensions are handled in GetRingCandidatesFromRing
                             for ring in self.FilterRings(self.miner.rings[embeding.molecule], embeding):
                                 if ring.IsMember(nbrAtom):
                                     candidates.append(FragmentExtensionByBondRing(atomInd, bond.GetBondOrder(), [nbrAtom], [ring], [embeding]))
@@ -441,10 +443,10 @@ class Fragment(Molecule):
 ##                                if ring.IsMember(nbrAtom) and ring.IsMember(atom) and ring not in addedRings:
 ##                                    candidates.append(FragmentExtensionByRing([ring], [embeding]))
 ##                                    addedRings.append(ring)
-                           
+
                     elif nbrAtom.GetIdx() not in reverseEmbedingDict:
-                        candidates.append(FragmentExtensionByBondAtom(atomInd, bond.GetBondOrder(), [nbrAtom], [embeding]))                                
-                else: 
+                        candidates.append(FragmentExtensionByBondAtom(atomInd, bond.GetBondOrder(), [nbrAtom], [embeding]))
+                else:
                     if nbrAtom.GetIdx() in reverseEmbedingDict:
                         if not self.GetBond(self.GetAtom(atomInd), self.GetAtom(reverseEmbedingDict[nbrAtom.GetIdx()])) :
                             candidates.append(FragmentExtensionByBond(atomInd, bond.GetBondOrder(), reverseEmbedingDict[nbrAtom.GetIdx()], [embeding]))
@@ -461,8 +463,8 @@ class Fragment(Molecule):
                 if candidateRing.IsMember(embeding.GetEmbededAtom(atom.atomIndex)):
                     candidates.append(FragmentExtensionByRing([candidateRing], [embeding]))
                     break
-        return candidates                             
-    
+        return candidates
+
     def GetCandidatesFromEmbeding(self, embeding):
         candidates=[]
         if len(self.atoms)==1 and self.miner.addWholeRings:
@@ -472,26 +474,26 @@ class Fragment(Molecule):
                     if ring.IsMember(atom):
                         candidates.append(FragmentExtensionByRing([ring],[embeding]))
                 return candidates
-            
-        if debug: print "Parsing candidate bonds"
+
+        if debug: print('Parsing candidate bonds')
         for atom in self.GetCandidateAtoms():
             candidates.extend(self.GetCandidatesFromAtom(atom.atomIndex, embeding))
-        
-        if debug: print "Parsing candidate rings"
+
+        if debug: print('Parsing candidate rings')
         for ring in self.GetCandidateRings():
-            candidates.extend(self.GetRingCandidatesFromRing(ring, embeding))            
-        return candidates        
-        
+            candidates.extend(self.GetRingCandidatesFromRing(ring, embeding))
+        return candidates
+
     def Extend(self):
-        if debug :print "Extending"
+        if debug :print('Extending')
         candidates=[]
         for embeding in self.embedings:
             c=self.GetCandidatesFromEmbeding(embeding)
             candidates.extend(c)
             #embedingDict[embeding]=c
-            
+
         #group equivalent candidates
-        if debug: print "Grouping candidates"
+        if debug: print('Grouping candidates')
         groups=[]
         for extension in candidates:
             for ext in groups:
@@ -500,9 +502,9 @@ class Fragment(Molecule):
                     break
             else:
                 groups.append(extension)
-  
+
         #generate new fragments
-        if debug: print "Generating new fragments"
+        if debug: print('Generating new fragments')
         newFragments=[]
         for extension in groups:
             #set_trace()
@@ -510,7 +512,7 @@ class Fragment(Molecule):
             extension.Extend(f)
             newFragments.append(f)
         return newFragments
-    
+
     def ToOBMol(self):
         atomCache={}
         mol=OBMol()
@@ -534,7 +536,7 @@ class Fragment(Molecule):
         writer=OBConversion()
         writer.SetInAndOutFormats("smi", "smi")
         return writer.WriteString(self.ToOBMol()).strip()
-    
+
     def ToCannonicalSmiles(self):
         atomCache={}
         mol=OBMol()
@@ -564,17 +566,17 @@ class Fragment(Molecule):
 ##            print "\n",self.ToSmiles()
 ##            for m in uniqueMolecules: print writer.WriteString(m).strip()
 ##            for m in s: print writer.WriteString(m).strip()
-        
+
         return float(len(uniqueMolecules))/float(len(activeSet) or 1)
 
-    def OcurrencesIn(self, molecule):    
+    def OcurrencesIn(self, molecule):
         pattern=OBSmartsPattern()
         pattern.Init(self.ToSmiles())
         return pattern.Match(molecule)
-    
+
     def ContainedIn(self, molecule):
         return bool(self.OcurrencesIn(molecule))
-            
+
 class FragmentMiner(object):
     """A class for finding frequent molecular fragments
     Attributes:
@@ -589,7 +591,7 @@ class FragmentMiner(object):
     Example:
     >>> miner = FragmentMiner(active = ["CC(C=N)=O", "c1ccccc1C=O", "SCC(N)O"], inactive = [], minSupport = 0.6)
     >>> for fragment in miner.Search():
-    ... 	print fragment.ToSmiles() , "Support: %.3f" %fragment.Support()
+    ... 	print(fragment.ToSmiles() , "Support: %.3f" %fragment.Support())
     """
     def __init__(self, active, inactive=[], minSupport=0.2, maxSupport=0.2, addWholeRings=True, canonicalPruning=True, findClosed=True):
         self.active=filter(lambda m:m, map(self.LoadMolecules, active))
@@ -610,9 +612,9 @@ class FragmentMiner(object):
 ##        if mol:
 ##            mol.StripSalts()
         return mol
-        
+
     def GetAllMolecules(self):
-        return self.active+self.inactive     
+        return self.active+self.inactive
 
     def Initialize(self):
         """Initializes the search"""
@@ -628,7 +630,7 @@ class FragmentMiner(object):
                 ring.fingerprint=set([mol.GetAtom(i).GetAtomicNum() for i in ring._path])
 ##            for ring in mol.rings:
 ##                candidates.append(FragmentExtensionByRing([ring],[Embeding(molecule=mol)]))
-        
+
         for mol in self.GetAllMolecules():
             for atom in OBMolAtomIter(mol):
                 self.atomCount[atom.GetAtomicNum()]= self.atomCount[atom.GetAtomicNum()]+1 if  atom.GetAtomicNum() in self.atomCount else 1
@@ -663,7 +665,7 @@ class FragmentMiner(object):
 ##            excludeList.append(atom)
         self.activeSet=set(self.active)
         self.inactiveSet=set(self.inactive)
-            
+
     def TraverseTree(self, fragment):
         if self.canonicalPruning:
             codeWord=fragment.ToCannonicalSmiles()
@@ -680,7 +682,7 @@ class FragmentMiner(object):
         support=fragment.Support(self.activeSet)
         if support>=self.minSupport and fragment.Support(self.inactiveSet)<=self.maxSupport:
             if not self.findClosed or (support not in superStructSupport):
-                print fragment.ToSmiles().strip()+" %.2f %.2f" % (support, fragment.Support(self.inactiveSet))
+                print(fragment.ToSmiles().strip()+" %.2f %.2f" % (support, fragment.Support(self.inactiveSet)))
                 self.foundFragments.append(fragment)
         return support
 
@@ -714,7 +716,7 @@ class FragmentMiner(object):
                     yield f
             except StopIteration:
                 pass
-                
+
             superStructSupport.append(self.TraverseTree(frag))
         support=fragment.Support(self.activeSet)
         if support>=self.minSupport and fragment.Support(self.inactiveSet)<=self.maxSupport:
@@ -737,8 +739,8 @@ class FragmentMiner(object):
             except StopIteration:
                 pass
         #self.foundFragments=filter(lambda f:f.Support(self.inactive)<=self.maxSupport, self.foundFragments)
-        #return self.foundFragments    
-    
+        #return self.foundFragments
+
 def LoadMolFromSmiles(smiles):
     """Returns an OBMol construcetd from an SMILES code"""
     smiles = sorted(smiles.split("."), key=len)[-1] ## Strip salts
@@ -749,7 +751,7 @@ def LoadMolFromSmiles(smiles):
         return None
     mol.smilesCode=smiles
     return mol
-    
+
 class Fragmenter(object):
     """An object that is used to fragment an ExampleTable
     Attributes:
@@ -779,7 +781,7 @@ class Fragmenter(object):
             smilesAttr=self.FindSmilesAttr(data)
         active=filter(lambda s:s, [str(e[smilesAttr]) for e in data if activeFunc(e)])
         inactive=filter(lambda s:s, [str(e[smilesAttr]) for e in data if not activeFunc(e)])
-        
+
         miner=FragmentMiner(active, inactive, self.minSupport, self.maxSupport, canonicalPruning=self.canonicalPruning, findClosed=self.findClosed)
         self.fragments=fragments=miner.Search()
         fragVars=[orange.EnumVariable(frag.ToCannonicalSmiles() if useCannonicalFragments else frag.ToSmiles(), values=["0", "1"]) for frag in fragments]
@@ -814,7 +816,7 @@ class Fragmenter(object):
         count=count.items()
         count.sort(lambda a,b:cmp(a[1], b[1]))
         return count[-1][0]
-            
+
 from Orange.orng import orngSVM
 class FragmentBasedLearner(orange.Learner):
     """A learner wrapper class that first runs the molecular fragmentation on the data.
@@ -940,7 +942,7 @@ class cairo_out(_cairo_out):
         import pybel
         molSmiles = max(molSmiles.split("."), key = lambda s:len(s))
         mol = pybel.readstring("smi", molSmiles)
-        
+
         if fragSmiles:
             pattern=pybel.Smarts(fragSmiles)
             matches = pattern.findall(mol)
@@ -1007,7 +1009,7 @@ class svg_out(_svg_out):
         import pybel
         molSmiles = max(molSmiles.split("."), key = lambda s:len(s))
         mol = pybel.readstring("smi", molSmiles)
-        
+
         if fragSmiles:
             pattern=pybel.Smarts(fragSmiles)
             matches = pattern.findall(mol)
@@ -1021,8 +1023,8 @@ class svg_out(_svg_out):
         gen.calculate_coords(o_mol, bond_length=30, force=True)
 ##        self.oasa2obidx = dict([(value, key) for key, value in ix2oa.items()])
         self.ob_matched = [idx2oa[i] for i in self.ob_matched]
-        return _svg_out.mol_to_svg(self, o_mol)    
-        
+        return _svg_out.mol_to_svg(self, o_mol)
+
 def mol_to_png(molSmiles, fragSmiles=None, file="mol.png", size=None):
     d = cairo_out()
     d.mol_to_cairo(molSmiles, fragSmiles)
@@ -1043,7 +1045,7 @@ def mol_to_svg(molSmiles, fragSmiles=None, file="mol.svg"):
     if type(file) == str:
         file = open(file, "w")
     file.write( tree.toprettyxml())
-    
+
 def _test_draw():
 ##    mol_to_png("CC1CC2C(CC(=O)O2)OC3CC4C(CC(C5C(O4)CC=CCC6C(O5)CC=CC7C(O6)CCCC8C(O7)(CC9C(O8)CC2C(O9)C(CC(O2)CC(=C)C=O)O)C)C)OC3(C1)C", "Scc", "mol1.png")
 ##    mol_to_png("CN(C)CCCN1c2ccccc2Sc3c1cc(cc3)C(F)(F)F", "Scc", "mol1.png")
@@ -1053,7 +1055,7 @@ def _test_draw():
     mol_to_svg("CN(C)CCCN1c2ccccc2Sc3c1cc(cc3)C(F)(F)F", "Scc", "mol1.svg")
     mol_to_svg("CN(C)CCCN1c2ccccc2Sc3c1cc(cc3)C(F)(F)F", "Ncc", "mol2.svg")
     mol_to_svg("CN(C)CCCN1c2ccccc2Sc3c1cc(cc3)C(F)(F)F", "NCC", "mol3.svg")
-    
+
 def _test():
     import orange
     d=orange.ExampleTable("E:\chem\mutagen_raw.tab")
@@ -1090,10 +1092,10 @@ def _test1():
     data, fragments1=fragmenter(data, "SMILES") #, lambda e:str(e[-1])=="1")
 ##    data, fragments2=fragmenter(data, "SMILES", lambda e:str(e[-1])=="0")
     data.save("E:\chem\mutagen_raw_frag.tab")
-    
+
 if __name__=="__main__":
     import time
     sTime=time.clock()
     _test_draw()
-    print time.clock()-sTime
+    print(time.clock()-sTime)
 

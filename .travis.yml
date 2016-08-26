@@ -3,7 +3,8 @@ language: python
 sudo: false   # use container-based infrastructure
 
 python:
-    - "2.7"
+    - "3.4"
+    - "3.5"
 
 addons:
     apt:

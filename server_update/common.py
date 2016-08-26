@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import Orange
 import Orange.utils.serverfiles as serverfiles
 import Orange.utils.environ as environ
@@ -16,7 +18,7 @@ parser.add_option("-m", "--mailto", help="e-mail the results to EMAIL", metavar=
 option, args = parser.parse_args()
 
 if not option.user or not option.password:
-    print "Pass -u username -p password!"
+    print('Pass -u username -p password!')
     sys.exit(1)
 
 sf_server = serverfiles.ServerFiles(option.user, option.password)
