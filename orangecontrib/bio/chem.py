@@ -8,12 +8,12 @@ Classes (see their corresponding __doc__ strings for further detail):
     FragmentBasedLearner    : A learner wrapper class that first runs the molecular fragmentation on the data
 """
 
+from __future__ import print_function
+
 try:
     from openbabel import OBMol, OBAtom, OBBond, OBSmartsPattern, OBConversion, OBMolAtomIter, OBMolBondIter, OBAtomBondIter
 except ImportError:
     pass
-
-from __future__ import print_function
 
 ##from pybel import *
 from copy import deepcopy
