@@ -1,14 +1,14 @@
 [![Build Status](https://travis-ci.org/tomazc/orange-bio.svg?branch=master)](https://travis-ci.org/tomazc/orange-bio)
 [![codecov](https://codecov.io/gh/tomazc/orange-bio/branch/master/graph/badge.svg)](https://codecov.io/gh/tomazc/orange-bio)
+[![Documentation Status](https://readthedocs.org/projects/orange-bioinformatics/badge/?version=latest)](http://orange-bioinformatics.readthedocs.io/en/latest/?badge=latest)
 
-Orange Bioinformatics
-=====================
+# Orange Bioinformatics
 
-Orange Bioinformatics extends Orange_, a data mining software
-package, with common functionality for bioinformatics. The provided
-functionality can be accessed as a Python library or through a visual
-programming interface (Orange Canvas). The latter is also suitable for
-non-programmers.
+Orange Bioinformatics extends [Orange](http://orange.biolab.si/), a data 
+mining software package, with common functionality for bioinformatics. 
+The provided functionality can be accessed as a Python library or through 
+a visual programming interface (Orange Canvas). The latter is also suitable
+for non-programmers.
 
 In Orange Canvas the analyst connects basic computational units, called
 widgets, into data flow analytics schemas. Two units-widgets can be
@@ -27,6 +27,4 @@ scoring distances between experiments with multiple factors. All features
 can be combined with powerful visualization, network exploration and
 data mining techniques from the Orange data mining framework.
 
-.. _Orange: http://orange.biolab.si/
-
-Documentation: http://orange-bioinformatics.readthedocs.org/
+Documentation: <http://orange-bioinformatics.readthedocs.org>

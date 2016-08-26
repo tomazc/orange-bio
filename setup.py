@@ -17,7 +17,10 @@ DOCUMENTATION_NAME = 'Orange Bioinformatics'
 VERSION = '2.6.19'
 
 DESCRIPTION = 'Orange Bioinformatics add-on for Orange data mining software package.'
-LONG_DESCRIPTION = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
+LONG_DESCRIPTION = open(os.path.join(os.path.dirname(__file__),
+                                     'README.md')).read().split('\n',
+                                                                maxsplit=4)[-1]
+
 AUTHOR = 'Bioinformatics Laboratory, FRI UL'
 AUTHOR_EMAIL = 'contact@orange.biolab.si'
 URL = 'http://orange.biolab.si/download'
